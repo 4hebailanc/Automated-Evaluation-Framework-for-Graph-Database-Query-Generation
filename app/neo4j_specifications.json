@@ -1,6 +1,6 @@
 {
   "uri": "bolt://localhost:7687",
   "user": "neo4j",
-  "password": "scm123",
-  "database": "scm"
+  "password": "imdb",
+  "database": "imdb"
 }
