@@ -106,16 +106,16 @@ def create_outputfile(filename, data):
 def create_template():
     #data = {'template':['description', 'ex1', 'ex2']}
     data = {}
-    templates = ['MATCH (n) RETURN n AS node',
-                 'MATCH (n) WHERE n.property > num RETURN n',
-                 'MATCH (n:Label)-[r]->(m:Label) RETURN *',
-                 'MATCH (n:Label)-[r]->(m:Label) RETURN n,m',
-                 'MATCH (n:Label)-[r:R1]->(m:Label) RETURN n,m', #good above
-                 'MATCH (n:Label)-[r]->(m:Label) RETURN n AS node, r AS rel',
-                 'MATCH (n:Label)-[r]->(m:Label) RETURN n AS node, r AS rel ORDER BY n.name',
-                 'MATCH (n:Label)-[r]->(m:Label) RETURN n AS node, r AS rel LIMIT 10',
-                 'MATCH (n:Label)-[r]->(m:Label) RETURN count(*) AS nbr',
-                 'MATCH (n:Label)-[r:R1]->(m:Label) WHERE n.property = '' RETURN m.property']
+    templates = ['MATCH (n:Label1) RETURN n AS node',
+                 'MATCH (n:Label1) WHERE n.property1 > num RETURN n',
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN *',
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN n,m',
+                 'MATCH (n:Label1)-[r:R1]->(m:Label2) RETURN n,m', #good above
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel',
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel ORDER BY n.name',
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel LIMIT 10',
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN count(*) AS nbr',
+                 'MATCH (n:Label1)-[r:R1]->(m:Label2) WHERE n.property1 = '' RETURN m.property2']
     descriptions = ['Find all nodes and return all nodes.',
                     'Find all nodes that their property is greater than a number ',
                     'Return the value of all variables.',
@@ -135,19 +135,50 @@ def create_template():
 
     for i in range(len(label_ls)):
         label_ls[i] =  label_ls[i].strip('\"')
-    print(label_ls)
+    #print(label_ls)
 
     with open("./output/propertyKeys.json") as file:
         property_data = json.load(file)
-        print(property_data)
+        #print(property_data)
     
     with open("./output/nodesRelations.json") as file:
         nodeRel_data = json.load(file)
-        print(nodeRel_data)
+        #print(nodeRel_data)
 
     #todo: formulate the file
+    template_data = {}
+    for i in range(len(templates)):
+        j = 0
+        ex = []
+        ex.append(descriptions[i])
+        for label in label_ls:
+            query = templates[i].replace("Label1", label)
 
+            
+            if "property1" in templates[i]:
+                query = query.replace("property1", property_data[label][0])
+
+            if "Label2" in templates[i]:
+                label2= get_seclabel(nodeRel_data, label)
+                query = query.replace("Label2", label2)
+            
+            if "property2" in templates[i] and label2 != '':
+                query = query.replace("property2", property_data[label2][0])
+            
+            if "R1" in templates[i]:
+                rel = get_relation(nodeRel_data, label, label2)
+                query = query.replace("R1", rel)
+
+            ex.append(query)
+
+            j+=1
+            if j == 5:
+                break
+        template_data[templates[i]] = ex
+
+    create_outputfile('template.json',template_data)
     '''
+    query = temp_str.format(l=label)
     label_ex, rel_ex = [], []
     for label in label_ls:
         query = 'MATCH (n:{l}) RETURN n'.format(l=label)
@@ -162,6 +193,17 @@ def create_template():
 
     create_outputfile('template.json',data)
     '''
+def get_seclabel(relations, subject):
+    #return the first object of the subject inputted
+    for value in relations.values():
+        if subject in value.keys():
+            return value[subject][0]
+
+def get_relation(relations, subject, object=''):
+    #object=get_seclabel(relations,subject)
+    for value in relations.values():
+        if subject in value.keys() and object in value[subject]:
+            return list(relations.keys())[list(relations.values()).index(value)]
 
 if __name__ == "__main__":
     #queries()
