@@ -1,0 +1,11 @@
+{
+    "rel":{
+        "sub1":["obj1","obj2"],
+        "sub2":["obj3"]
+
+    },
+    "SUPPLIES_TO":{
+        "Supplier":["Supplier","Smelter"],
+        "Smelter":["Supplier"]
+    }
+}

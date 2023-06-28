@@ -1,0 +1,4 @@
+{
+    "Supplier":["name","bp_name","ifa","duns","prewave_id","prewave_link","website"]
+    ,"SUPPLIES_TO":["tier","edge_sources"]
+}

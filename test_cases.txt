@@ -1,0 +1,40 @@
+with: specifications of the relationship or property keys
+
+1. one node type involve: return all [kinds of] {node type}
+    return all kinds of business scope
+    return total number of business partner
+    return all branch
+
+2. one node type involve, its property: return all {node type} that have {property key} [condition]
+    return all suppliers that have aggregated score above 15
+    return all countries that have sustainability risk above 5
+
+3. two node type involve, w/o relationship, w/o property: return all {node type} that have {node type}
+    return all suppliers that have another suppliers 
+        MessageSizeError: Data of size 1384.3 MB exceeds the message size limit of 200.0 MB.
+    return all business partner in suppliers
+    return smelters and their related branches -> the query is wrong
+
+4. two node type involve, w/ relationship, w/o property: return [all] {node type} that have {node type}
+    return all suppliers that belongs to another suppliers
+    return all countries that supply another countries
+    return all business partner belongs to suppliers
+    return smelters and their supplied branches 
+
+5. two node type involve, w/o relationship, w/ property: return {property key} of {node type} that's {node type}
+    return the aggregated score of suppliers that are in Germany 
+
+6. two node type involve, w/ rel, w/ property: reutrn {property key} of 
+    return the aggregated score of suppliers that are located in Germany 
+
+Examples of criticalities:
+- Suppliers are located in the same (critical) region -> 3,4
+- Suppliers have a high risk score -> 2
+- Same supplier is part of many supply chains -> how to define supply chains, how to simpliify this query
+    supply chain:
+- Multiple tier-1 suppliers buy from the same subsupplier
+    return tier-1 suppliers
+    MATCH (s1:Supplier)-[:TIER_ONE_OF]->(b1:Branch)-[:SUPPLIES_TO]->(s2:Supplier)<-[:TIER_ONE_OF]-(s3:Supplier) RETURN s1, s2, s3
+- Only one supplier is related to a specific business scope
+
+- Relevant substances have critical HHI
