@@ -8,6 +8,11 @@ explain + cypherquery
 profile + cypherquery
 https://neo4j.com/docs/cypher-manual/current/query-tuning/query-profile/
 '''
+import math
+
+def percentile(data, perc: int):
+    size = len(data)
+    return sorted(data)[int(math.ceil((size * perc) / 100)) - 1]
 
 def connect_db():
     # URI examples: "neo4j://localhost", "neo4j+s://xxx.databases.neo4j.io"
@@ -55,7 +60,6 @@ def queries():
     create_outputfile('nodesRelations.json',relations_list)
     create_outputfile('propertyKeys.json',properties)
 
-
 def sep_nodes_relations(relations_triplet):
     relations_ls, nodes_ls = [],[]
 
@@ -72,7 +76,7 @@ def sep_nodes_relations(relations_triplet):
         nodes_ls.extend(two_nodes)
     
     rel_set = list(set(relations_ls))
-
+    #current problem:cant ignore null
     #index would be the same
     #get the indexes of the same relations in the list of rels and nodes
     #temp = {'rel':[['sub1','obj1'], ['sub2','obj2']]}
@@ -98,21 +102,58 @@ def sep_nodes_relations(relations_triplet):
             combine[key][subjects[i]].append(objects[i])
 
     return combine
+
+def get_numeric_properties(filename="./output/propertyKeys.json"):
+    with open(filename) as file:
+        property_data = json.load(file)
+    keys = property_data.keys()
+    
+    driver = connect_db()
+    prop_stats = {}
+    
+    with driver.session(database="neo4j") as session:
+        for key in keys:
+            num_query = 'CALL apoc.meta.nodeTypeProperties({includeLabels: ["n"]});'
+
+            key = '"'+ key +'"'
+            num_query = num_query.replace('"n"',key)
+            type_result = session.run(num_query).data()
+            
+            for i in type_result:
+                prop_query ='MATCH (n: Label1) RETURN collect(n.property1) as prop'
+                temp_ls=[]
+                if 'Double'in i['propertyTypes'] or 'Long'in i['propertyTypes']:
+                    prop_query = prop_query.replace('Label1',i['nodeLabels'][0])
+                    prop_query = prop_query.replace('property1',i['propertyName'])
+                    prop_result = session.run(prop_query).data()
+                    ls_result = prop_result[0]['prop']
+
+                    ls_result =  [ x for x in ls_result if type(x) is not str]
+
+                    temp_ls.append(round(percentile(ls_result,25),3))
+                    temp_ls.append(round(percentile(ls_result,50),3))
+                    temp_ls.append(round(percentile(ls_result,75),3))
+
+                    prop_stats[i['propertyName']] = list(set(temp_ls))
         
+    driver.close()
+    create_outputfile('propertiesQuantile.json',prop_stats)
+
+
 def create_outputfile(filename, data):
     with open('./output/'+filename, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False)
     
 def create_template():
     #data = {'template':['description', 'ex1', 'ex2']}
-    data = {}
+
     templates = ['MATCH (n:Label1) RETURN n AS node',
                  'MATCH (n:Label1) WHERE n.property1 > num RETURN n',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN *',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n,m',
                  'MATCH (n:Label1)-[r:R1]->(m:Label2) RETURN n,m', #good above
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel',
-                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel ORDER BY n.name',
+                 'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel ORDER BY n.property1',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel LIMIT 10',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN count(*) AS nbr',
                  'MATCH (n:Label1)-[r:R1]->(m:Label2) WHERE n.property1 = '' RETURN m.property2']
@@ -144,6 +185,10 @@ def create_template():
     with open("./output/nodesRelations.json") as file:
         nodeRel_data = json.load(file)
         #print(nodeRel_data)
+    
+    with open("./output/propertiesQuantile.json") as file:
+        propStats_data = json.load(file)
+    keys = propStats_data.keys()
 
     #todo: formulate the file
     template_data = {}
@@ -154,9 +199,15 @@ def create_template():
         for label in label_ls:
             query = templates[i].replace("Label1", label)
 
-            
             if "property1" in templates[i]:
-                query = query.replace("property1", property_data[label][0])
+                temp_idx = 0
+                if "num" in templates[i]:
+                    while property_data[label][temp_idx] not in keys:
+                        temp_idx+=1
+                    query = query.replace('num',str(propStats_data[property_data[label][temp_idx]][0]))
+                    query = query.replace("property1", property_data[label][temp_idx])
+                else:
+                    query = query.replace("property1", property_data[label][0])
 
             if "Label2" in templates[i]:
                 label2= get_seclabel(nodeRel_data, label)
@@ -177,22 +228,7 @@ def create_template():
         template_data[templates[i]] = ex
 
     create_outputfile('template.json',template_data)
-    '''
-    query = temp_str.format(l=label)
-    label_ex, rel_ex = [], []
-    for label in label_ls:
-        query = 'MATCH (n:{l}) RETURN n'.format(l=label)
-        label_ex.append(query)
 
-    for rel in relTypes_ls:
-        query = 'MATCH p={r} RETURN p'.format(r=rel) 
-        rel_ex.append(query)
-
-    data[node_template] = label_ex
-    data[rel_template]  = rel_ex
-
-    create_outputfile('template.json',data)
-    '''
 def get_seclabel(relations, subject):
     #return the first object of the subject inputted
     for value in relations.values():
@@ -208,3 +244,4 @@ def get_relation(relations, subject, object=''):
 if __name__ == "__main__":
     #queries()
     create_template()
+    #get_numeric_properties()
