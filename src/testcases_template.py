@@ -1,13 +1,6 @@
 import json
 from neo4j import GraphDatabase
 import re
-
-'''
-todo:
-explain + cypherquery
-profile + cypherquery
-https://neo4j.com/docs/cypher-manual/current/query-tuning/query-profile/
-'''
 import math
 
 def percentile(data, perc: int):
@@ -232,10 +225,12 @@ def create_template():
                         query = templates[i].replace("Label1", "")
                         query = query.replace("Label2", label)
 
-                        #how to solve when one of the label is empty
+                        #how to solve when one of the label is empty???
+                        #change the template accordingly
                         if "property1" in templates[i]:
                             query = query.replace("property1",'')
                         if "num" in templates[i]:
+                            pass
                     else:
                         query = query.replace("Label2", label2)
                 
@@ -274,11 +269,16 @@ def test_template():
 
 #todo: 
 # test out new dump
-# look into paper to see if cover all the categories
-# then expand the template
+# look into paper to see if cover all the categories -> create an excel
+# then expand the template/ modify code
+# create more complex template, less simple template
+
 # run the queries to see if it's semantically correct
 # ask chatgpt to describe the query, consistency
-# create more complex template, less simple template
+
+#explain + cypherquery
+#profile + cypherquery
+#https://neo4j.com/docs/cypher-manual/current/query-tuning/query-profile/
 
 if __name__ == "__main__":
     #queries()
