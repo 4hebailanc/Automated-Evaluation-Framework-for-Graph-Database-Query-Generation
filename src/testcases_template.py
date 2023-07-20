@@ -265,7 +265,28 @@ def get_relation(relations, subject, object=''):
             return list(relations.keys())[list(relations.values()).index(value)]
 
 def test_template():
+    with open("./output/template.json") as file:
+        template_data = json.load(file)
+
+    template_ls = []
+    for value in template_data.values():
+        value.pop(0)
+        template_ls.extend(value)
+    print(template_ls)
+    #issue here: label2 is empty, thus query is error
+    '''
     driver = connect_db()
+
+    result_ls = []
+    for template in template_ls:
+        query = template + ' LIMIT 1'
+        with driver.session(database="neo4j") as session:
+            # Use .data() to access the results array
+            result = session.run(query).data()
+        result_ls.extend(result)
+    
+    print(result_ls)'''
+
 
 #todo: 
 # test out new dump
@@ -283,4 +304,5 @@ def test_template():
 if __name__ == "__main__":
     #queries()
     #get_numeric_properties()
-    create_template()
+    #create_template()
+    test_template()
