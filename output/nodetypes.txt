@@ -1,1 +1,1 @@
-["Country", "BusinessPartner", "Supplier", "BusinessPartner", "Supplier", "Branch", "Supplier", "Branch", "BusinessScope", "ManufacturerPart", "Component", "Substance", "SiemensPart", "Smelter"]
+["Substance", "Supplier", "Branch", "B", "BusinessPartner", "Supplier", "BP", "Smelter", "Country", "BusinessPartner", "Supplier", "Branch", "BBP", "BusinessScope", "ManufacturerPart", "Component", "SiemensPart"]

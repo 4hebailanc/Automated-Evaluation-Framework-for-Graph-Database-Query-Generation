@@ -37,10 +37,13 @@ def queries():
     with driver.session(database="neo4j") as session:
         # Use .data() to access the results array
         labels_result = session.run(node_labels_query).data()
-        del labels_result[0]  #remove '_Neodash_Dashboard'
+
         for item in labels_result:
             for label in item['n']:
-                label_list.append(label)
+                if label == '_Neodash_Dashboard':
+                    continue
+                else:
+                    label_list.append(label)
         
         relations_result = session.run(relations_query).data()
         relations = relations_result[0]['relTypes']
@@ -192,39 +195,63 @@ def create_template():
 
     #todo: formulate the file
     template_data = {}
+    property1, num = '', ''
     for i in range(len(templates)):
-        j = 0
+        k = 0
         ex = []
         ex.append(descriptions[i])
         for label in label_ls:
-            query = templates[i].replace("Label1", label)
+            if label not in property_data:
+                continue
+            else:
+                query = templates[i].replace("Label1", label)
 
-            if "property1" in templates[i]:
-                temp_idx = 0
-                if "num" in templates[i]:
-                    while property_data[label][temp_idx] not in keys:
-                        temp_idx+=1
-                    query = query.replace('num',str(propStats_data[property_data[label][temp_idx]][0]))
-                    query = query.replace("property1", property_data[label][temp_idx])
-                else:
-                    query = query.replace("property1", property_data[label][0])
+                if "property1" in templates[i]:
+                    temp_idx = 0
+                    
+                    if "num" in templates[i]:
+                        if label in propStats_data:
+                            if property_data[label][temp_idx] in propStats_data[label]:
+                                query = query.replace('num',str(propStats_data[property_data[label][temp_idx]][0]))
+                                query = query.replace("property1", property_data[label][temp_idx])
+                                property1 = property_data[label][temp_idx]
+                                num = str(propStats_data[property_data[label][temp_idx]][0])
+                            else:
+                                continue
+                        else:
+                            continue
+                    else:
+                        query = query.replace("property1", property_data[label][0])
+                        property1 = property_data[label][0]
 
-            if "Label2" in templates[i]:
-                label2= get_seclabel(nodeRel_data, label)
-                query = query.replace("Label2", label2)
+                if "Label2" in templates[i]:
+                    label2= get_seclabel(nodeRel_data, label)
+                    if label2 is None:
+                        label2 = label
+                        label = ''
+                        query = templates[i].replace("Label1", "")
+                        query = query.replace("Label2", label)
+
+                        #how to solve when one of the label is empty
+                        if "property1" in templates[i]:
+                            query = query.replace("property1",'')
+                        if "num" in templates[i]:
+                    else:
+                        query = query.replace("Label2", label2)
+                
+                if "property2" in templates[i]:
+                    query = query.replace("property2", property_data[label2][0])
+                
+                if "R1" in templates[i]:
+                    rel = get_relation(nodeRel_data, label, label2)
+                    query = query.replace("R1", rel)
+
+                ex.append(query)
+
+                k+=1
+                if k == 5:
+                    break
             
-            if "property2" in templates[i] and label2 != '':
-                query = query.replace("property2", property_data[label2][0])
-            
-            if "R1" in templates[i]:
-                rel = get_relation(nodeRel_data, label, label2)
-                query = query.replace("R1", rel)
-
-            ex.append(query)
-
-            j+=1
-            if j == 5:
-                break
         template_data[templates[i]] = ex
 
     create_outputfile('template.json',template_data)
@@ -233,6 +260,7 @@ def get_seclabel(relations, subject):
     #return the first object of the subject inputted
     for value in relations.values():
         if subject in value.keys():
+            print(value, subject)
             return value[subject][0]
 
 def get_relation(relations, subject, object=''):
@@ -241,7 +269,18 @@ def get_relation(relations, subject, object=''):
         if subject in value.keys() and object in value[subject]:
             return list(relations.keys())[list(relations.values()).index(value)]
 
+def test_template():
+    driver = connect_db()
+
+#todo: 
+# test out new dump
+# look into paper to see if cover all the categories
+# then expand the template
+# run the queries to see if it's semantically correct
+# ask chatgpt to describe the query, consistency
+# create more complex template, less simple template
+
 if __name__ == "__main__":
     #queries()
-    create_template()
     #get_numeric_properties()
+    create_template()
