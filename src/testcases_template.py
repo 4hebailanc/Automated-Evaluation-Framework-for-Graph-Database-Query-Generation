@@ -3,6 +3,11 @@ from neo4j import GraphDatabase
 import re
 import math
 
+# todo:
+# put the current template into the table
+
+# generate the testing pipeline
+
 def percentile(data, perc: int):
     size = len(data)
     return sorted(data)[int(math.ceil((size * perc) / 100)) - 1]
