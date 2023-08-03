@@ -1,3 +1,6 @@
+import sys
+sys.path.append('./')
+
 import json
 from src.chatgpt_client import ChatGPTClient
 from src.neo4j_client import Neo4jClient
@@ -54,6 +57,7 @@ def generate_cypher_query(verbalization):
 
 def describe_cypher_query(query):
     description = chat_gpt_client.get_completion(prompt = query)
+    print(description) #save the query and the description
     return description
 
 def get_template(file_name):
@@ -66,7 +70,7 @@ def get_template(file_name):
         temp.pop(0)
         temp_ls.extend(temp)
 
-    print(temp_ls)
+    #print(temp_ls)
     return temp_ls
 
 def compare_results(template, generated):
@@ -74,9 +78,12 @@ def compare_results(template, generated):
 
     for i in range (indices):
         if template[i] == generated[i]:
-            print('yes',template[i],generated[i])
+            #print('yes',template[i],generated[i])
+            print('yes')
         else:
-            print('no',template[i],generated[i])
+            #print('no',template[i],generated[i])
+            print('no')
+    #compare results and save queries
 
 
 if __name__ == "__main__":
@@ -91,3 +98,9 @@ if __name__ == "__main__":
         cypher_ls.append(describe_cypher_query(description))
 
     compare_results(template_ls,cypher_ls)
+# save the predefined cypher query, nl/multiple nl description,  results as test set
+# evaluation save the corresponding result from chatgpt and neo4j database
+# define template_id for gerneral template, cypher queries based on template, nl description for the queries examples 
+# as json file
+
+#current: generate in small amount first 

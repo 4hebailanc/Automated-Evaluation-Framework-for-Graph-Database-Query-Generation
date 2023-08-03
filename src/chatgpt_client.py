@@ -35,9 +35,12 @@ class ChatGPTClient:
         # Send the API request
         response = requests.post(self.api_url, json=json_data, headers={'api-key': self.api_key})
         # Parse the response JSON
-        completion = response.json()
+        try:
+            completion = response.json()
         # Check if the content is filtered due to OpenAI's content policies
-        if completion['choices'][0]['finish_reason'] == "content_filter":
-            print("The generated content is filtered.")
-            # Return the generated completion text
-        return completion['choices'][0]['text']
+            if completion['choices'][0]['finish_reason'] == "content_filter":
+                print("The generated content is filtered.")
+                # Return the generated completion text
+            return completion['choices'][0]['text']
+        except (KeyError, requests.exceptions.JSONDecodeError):
+            pass
