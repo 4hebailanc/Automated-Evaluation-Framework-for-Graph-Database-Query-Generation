@@ -1,6 +1,6 @@
 import json
-from chatgpt_client import ChatGPTClient
-from neo4j_client import Neo4jClient
+from src.chatgpt_client import ChatGPTClient
+from src.neo4j_client import Neo4jClient
 from neo4j import GraphDatabase
 
 with open('app/api_credentials.json') as f:
