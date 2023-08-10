@@ -56,7 +56,12 @@ def generate_cypher_query(verbalization):
     return cypher_query
 
 def describe_cypher_query(query):
-    description = chat_gpt_client.get_completion(prompt = query)
+    prompt = f"""      
+        Given cypher query below, please provide a description for the query in one sentance.
+        Cypher Query: ```{query}```                                                                                                                                                                                                                                                                                     
+        [no prose]
+        """
+    description = chat_gpt_client.get_completion(prompt = prompt)
     print(description) #save the query and the description
     return description
 
@@ -85,19 +90,29 @@ def compare_results(template, generated):
             print('no')
     #compare results and save queries
 
+def create_outputfile(filename, data):
+    with open('./output/'+filename, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False)
+
 
 if __name__ == "__main__":
     template_ls = get_template('output/template.json')
     
     description_ls, cypher_ls = [], []
-
+    output_json = {}
     for template in template_ls:
-        description_ls.append(generate_cypher_query(template))
+        description_ls.append(describe_cypher_query(template))
     
-    for description in description_ls:
-        cypher_ls.append(describe_cypher_query(description))
+    for i in range(len(template_ls)):
+        output_json[template_ls[i]] = description_ls[i]
+    
+    create_outputfile('template_description.json', output_json)
+    
+    #for description in description_ls:
+    #    cypher_ls.append(describe_cypher_query(description))
 
-    compare_results(template_ls,cypher_ls)
+    #compare_results(template_ls,cypher_ls)
+
 # save the predefined cypher query, nl/multiple nl description,  results as test set
 # evaluation save the corresponding result from chatgpt and neo4j database
 # define template_id for gerneral template, cypher queries based on template, nl description for the queries examples 
