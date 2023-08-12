@@ -185,12 +185,13 @@ def create_template():
     
     with open("./output/nodesRelations.json") as file:
         nodeRel_data = json.load(file)
-        #print(nodeRel_data)
+        rel_labels_ls = get_rellabels(nodeRel_data)
     
     with open("./output/propertiesQuantile.json") as file:
         propStats_data = json.load(file)
     keys = propStats_data.keys()
 
+    
     #todo: formulate the file
     template_data = {}
     property1, num = '', ''
@@ -198,10 +199,12 @@ def create_template():
         k = 0
         ex = []
         ex.append(descriptions[i])
-        for label in label_ls:
-            if label not in property_data:
+        #here
+        for triplet in rel_labels_ls:
+            if triplet[0] not in property_data:
                 continue
             else:
+                label = triplet[0]
                 query = templates[i].replace("Label1", label)
 
                 if "property1" in templates[i]:
@@ -223,8 +226,8 @@ def create_template():
                         property1 = property_data[label][0]
 
                 if "Label2" in templates[i]:
-                    label2= get_seclabel(nodeRel_data, label)
-                    if label2 is None:
+                    label2 = triplet[2]
+                    if label2 is None or label2 is '':
                         label2 = label
                         label = ''
                         query = templates[i].replace("Label1", "")
@@ -243,31 +246,34 @@ def create_template():
                     query = query.replace("property2", property_data[label2][0])
                 
                 if "R1" in templates[i]:
-                    rel = get_relation(nodeRel_data, label, label2)
-                    query = query.replace("R1", rel)
+                    query = query.replace("R1", triplet[1])
 
                 ex.append(query)
 
                 k+=1
                 if k == 5:
                     break
+        
             
         template_data[templates[i]] = ex
 
-    create_outputfile('template.json',template_data)
+    create_outputfile('new_template.json',template_data) 
 
-def get_seclabel(relations, subject):
-    #return the first object of the subject inputted
-    for value in relations.values():
-        if subject in value.keys():
-            print(value, subject)
-            return value[subject][0]
-
-def get_relation(relations, subject, object=''):
-    #object=get_seclabel(relations,subject)
-    for value in relations.values():
-        if subject in value.keys() and object in value[subject]:
-            return list(relations.keys())[list(relations.values()).index(value)]
+def get_rellabels(relations_dict):
+    ls = []
+    # {rel:{sub:[obj]}}
+    # [[sub, rel, obj],[sub, rel, obj]]
+    for key in relations_dict.keys():
+        temp = []
+        for inside_key in relations_dict[key].keys():
+            for value in relations_dict[key][inside_key]:
+                temp.append(inside_key)
+                temp.append(key)
+                temp.append(value)
+                ls.append(temp)
+                temp = []
+    print(ls)
+    return ls
 
 def test_template():
     with open("./output/template.json") as file:
@@ -302,12 +308,12 @@ def test_template():
 # run the queries to see if it's semantically correct
 # ask chatgpt to describe the query, consistency
 
-#explain + cypherquery
+#explain + cypherquery  
 #profile + cypherquery
 #https://neo4j.com/docs/cypher-manual/current/query-tuning/query-profile/
 
 if __name__ == "__main__":
     #queries()
     #get_numeric_properties()
-    #create_template()
-    test_template()
+    create_template()
+    #test_template()
