@@ -55,14 +55,35 @@ def generate_cypher_query(verbalization):
     cypher_query = chat_gpt_client.get_completion(prompt=prompt)
     return cypher_query
 
-def describe_cypher_query(query):
+def simple_describe_cypher_query(query):
     prompt = f"""      
-        Given cypher query below, please provide a description for the query in one sentance.
+        Given cypher query below, please provide a description for the query in one sentance like how a user who has no background in database might ask a question.
         Cypher Query: ```{query}```                                                                                                                                                                                                                                                                                     
         [no prose]
         """
     description = chat_gpt_client.get_completion(prompt = prompt)
-    print(description) #save the query and the description
+    return description
+
+def example_describe_cypher_query(query):
+    prompt = f"""      
+        Given cypher query below, please provide a description for the query in one sentance like how a user who has no background in database might ask a question.
+        Example would be: return the nodes that have the tier one relationship with suppliers for ```MATCH ()-[r:TIER_ONE_OF]->(m:Supplier) RETURN n,m```
+        Cypher Query: ```{query}```                                                                                                                                                                                                                                                                                     
+        
+        """
+    description = chat_gpt_client.get_completion(prompt = prompt)
+    return description
+
+def schema_describe_cypher_query(query):
+    with open('data/schema.json') as f:
+        schema = json.load(f)
+
+    prompt = f"""
+        Given the Neo4j schema, and cypher query below. please provide a description for the query in one sentance like how a user who has no background in database might ask a question.               
+        Schema: ---{schema}---      
+        Cypher Query: ```{query}```                                                                                                                                                                                                                                                                                     
+        """
+    description = chat_gpt_client.get_completion(prompt = prompt)
     return description
 
 def get_template(file_name):
@@ -75,7 +96,6 @@ def get_template(file_name):
         temp.pop(0)
         temp_ls.extend(temp)
 
-    #print(temp_ls)
     return temp_ls
 
 def compare_results(template, generated):
@@ -88,7 +108,7 @@ def compare_results(template, generated):
         else:
             #print('no',template[i],generated[i])
             print('no')
-    #compare results and save queries
+    #todo: compare results and save queries
 
 def create_outputfile(filename, data):
     with open('./output/'+filename, 'w', encoding='utf-8') as f:
@@ -101,21 +121,13 @@ if __name__ == "__main__":
     description_ls, cypher_ls = [], []
     output_json = {}
     for template in template_ls:
-        description_ls.append(describe_cypher_query(template))
+        temp = []
+        temp.append(simple_describe_cypher_query(template))
+        temp.append(example_describe_cypher_query(template))
+        temp.append(schema_describe_cypher_query(template))
+        description_ls.append(temp)
     
     for i in range(len(template_ls)):
         output_json[template_ls[i]] = description_ls[i]
     
     create_outputfile('template_description.json', output_json)
-    
-    #for description in description_ls:
-    #    cypher_ls.append(describe_cypher_query(description))
-
-    #compare_results(template_ls,cypher_ls)
-
-# save the predefined cypher query, nl/multiple nl description,  results as test set
-# evaluation save the corresponding result from chatgpt and neo4j database
-# define template_id for gerneral template, cypher queries based on template, nl description for the queries examples 
-# as json file
-
-#current: generate in small amount first 

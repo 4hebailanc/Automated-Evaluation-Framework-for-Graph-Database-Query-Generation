@@ -3,11 +3,6 @@ from neo4j import GraphDatabase
 import re
 import math
 
-# todo:
-# put the current template into the table
-
-# generate the testing pipeline
-
 def percentile(data, perc: int):
     size = len(data)
     return sorted(data)[int(math.ceil((size * perc) / 100)) - 1]
@@ -38,7 +33,7 @@ def queries():
 
         for item in labels_result:
             for label in item['n']:
-                if label == '_Neodash_Dashboard':
+                if label == '_Neodash_Dashboard': #remove '_Neodash_Dashboard'
                     continue
                 else:
                     label_list.append(label)
@@ -47,7 +42,7 @@ def queries():
         relations = relations_result[0]['relTypes']
 
         properties_result = session.run(properties_query).data()
-        del properties_result[0]  #remove '_Neodash_Dashboard'
+        
         for item in properties_result:
             properties[item['label']] = item['propertyKeys']
 
@@ -77,8 +72,6 @@ def sep_nodes_relations(relations_triplet):
         nodes_ls.extend(two_nodes)
     
     rel_set = list(set(relations_ls))
-    #current problem:cant ignore null
-    #index would be the same
     #get the indexes of the same relations in the list of rels and nodes
     #temp = {'rel':[['sub1','obj1'], ['sub2','obj2']]}
     #combine = {'rel':{ 'sub1':['obj1', 'obj3'], 'sub2':['obj2'] } }
@@ -152,7 +145,7 @@ def create_template():
                  'MATCH (n:Label1) WHERE n.property1 > num RETURN n',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN *',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n,m',
-                 'MATCH (n:Label1)-[r:R1]->(m:Label2) RETURN n,m', #good above
+                 'MATCH (n:Label1)-[r:R1]->(m:Label2) RETURN n,m', 
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel ORDER BY n.property1',
                  'MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel LIMIT 10',
@@ -162,7 +155,7 @@ def create_template():
                     'Find all nodes that their property is greater than a number ',
                     'Return the value of all variables.',
                     'Reture the nodes that have a relationship',
-                    'Reture the nodes that satisfied the relationship', #good above
+                    'Reture the nodes that satisfied the relationship', 
                     'Use alias for result column name.',
                     'Sort the result. The default order is ASCENDING.',
                     'Limit the number of rows to a maximum of 10, for the result set.',
@@ -191,15 +184,13 @@ def create_template():
         propStats_data = json.load(file)
     keys = propStats_data.keys()
 
-    
-    #todo: formulate the file
     template_data = {}
     property1, num = '', ''
     for i in range(len(templates)):
         k = 0
         ex = []
         ex.append(descriptions[i])
-        #here
+
         for triplet in rel_labels_ls:
             if triplet[0] not in property_data:
                 continue
@@ -230,11 +221,9 @@ def create_template():
                     if label2 is None or label2 is '':
                         label2 = label
                         label = ''
-                        query = templates[i].replace("Label1", "")
-                        query = query.replace("Label2", label)
+                        query = templates[i].replace("n:Label1", "")
+                        query = query.replace("Label2", label2)
 
-                        #how to solve when one of the label is empty???
-                        #change the template accordingly
                         if "property1" in templates[i]:
                             query = query.replace("property1",'')
                         if "num" in templates[i]:
@@ -257,7 +246,7 @@ def create_template():
             
         template_data[templates[i]] = ex
 
-    create_outputfile('new_template.json',template_data) 
+    create_outputfile('template.json',template_data) 
 
 def get_rellabels(relations_dict):
     ls = []
@@ -275,45 +264,7 @@ def get_rellabels(relations_dict):
     print(ls)
     return ls
 
-def test_template():
-    with open("./output/template.json") as file:
-        template_data = json.load(file)
-
-    template_ls = []
-    for value in template_data.values():
-        value.pop(0)
-        template_ls.extend(value)
-    print(template_ls)
-    #issue here: label2 is empty, thus query is error
-    '''
-    driver = connect_db()
-
-    result_ls = []
-    for template in template_ls:
-        query = template + ' LIMIT 1'
-        with driver.session(database="neo4j") as session:
-            # Use .data() to access the results array
-            result = session.run(query).data()
-        result_ls.extend(result)
-    
-    print(result_ls)'''
-
-
-#todo: 
-# test out new dump
-# look into paper to see if cover all the categories -> create an excel
-# then expand the template/ modify code
-# create more complex template, less simple template
-
-# run the queries to see if it's semantically correct
-# ask chatgpt to describe the query, consistency
-
-#explain + cypherquery  
-#profile + cypherquery
-#https://neo4j.com/docs/cypher-manual/current/query-tuning/query-profile/
-
 if __name__ == "__main__":
     #queries()
     #get_numeric_properties()
     create_template()
-    #test_template()

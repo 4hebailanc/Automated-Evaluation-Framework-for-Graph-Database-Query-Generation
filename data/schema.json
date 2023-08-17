@@ -1,10 +1,6 @@
 [
   {
-    "keys": [
-      "labels",
-      "relTypes"
-    ],
-    "length": 2,
+
     "_fields": [
       {
         "SiemensPart": {
@@ -235,10 +231,6 @@
           "low": 7831
         }
       }
-    ],
-    "_fieldLookup": {
-      "labels": 0,
-      "relTypes": 1
-    }
+    ]
   }
 ]
