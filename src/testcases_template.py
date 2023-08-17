@@ -221,7 +221,7 @@ def create_template():
                     if label2 is None or label2 is '':
                         label2 = label
                         label = ''
-                        query = templates[i].replace("n:Label1", "")
+                        query = templates[i].replace("n:Label1", "n")
                         query = query.replace("Label2", label2)
 
                         if "property1" in templates[i]:
