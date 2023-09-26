@@ -1,0 +1,10 @@
+MATCH (n:Label1) RETURN n AS node| Find all nodes and return all nodes.
+MATCH (n:Label1) WHERE n.property1 > num RETURN n| Find all nodes that their property is greater than a number 
+MATCH (n:Label1)-[r]->(m:Label2) RETURN *| Return the value of all variables.
+MATCH (n:Label1)-[r]->(m:Label2) RETURN n,m| Reture the nodes that have a relationship
+MATCH (n:Label1)-[r:R1]->(m:Label2) RETURN n,m| Reture the nodes that satisfied the relationship
+MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel| Use alias for result column name.
+MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel ORDER BY n.property1| Sort the result. The default order is ASCENDING.
+MATCH (n:Label1)-[r]->(m:Label2) RETURN n AS node, r AS rel LIMIT 10| Limit the number of rows to a maximum of 10, for the result set.
+MATCH (n:Label1)-[r]->(m:Label2) RETURN count(*) AS nbr| The number of matching rows.
+MATCH (n:Label1)-[r:R1]->(m:Label2) WHERE n.property1 =  RETURN m.property2| Return the property of node m where the property of node n is filtered

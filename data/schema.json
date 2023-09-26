@@ -1,0 +1,236 @@
+[
+  {
+
+    "_fields": [
+      {
+        "SiemensPart": {
+          "low": 1295
+        },
+        "Branch": {
+          "low": 33459
+        },
+        "Smelter": {
+          "low": 340
+        },
+        "BusinessPartner": {
+          "low": 31371
+        },
+        "BusinessScope": {
+          "low": 32
+        },
+        "Country": {
+          "low": 249
+        },
+        "Substance": {
+          "low": 321
+        },
+        "Supplier": {
+          "low": 61234
+        },
+        "ManufacturerPart": {
+          "low": 1864
+        },
+        "Component": {
+          "low": 233
+        }
+      },
+      {
+        "()-[:BELONGS_TO]->(:Branch)": {
+          "low": 3846
+        },
+        "()-[:SAME_AS]->()": {
+          "low": 1847
+        },
+        "(:Supplier)-[:SUPPLIES_TO]->()": {
+          "low": 1142896
+        },
+        "(:Branch)-[:SUPPLIES_TO]->()": {
+          "low": 563451
+        },
+        "()-[:PRODUCED_IN]->(:Country)": {
+          "low": 4381
+        },
+        "()-[:RELATIONS]->()": {
+          "low": 1208
+        },
+        "(:ManufacturerPart)-[:SAME_AS]->()": {
+          "low": 1847
+        },
+        "(:BusinessPartner)-[:BELONGS_TO]->()": {
+          "low": 26800
+        },
+        "(:ManufacturerPart)-[:HAS_COMPONENT]->()": {
+          "low": 10088
+        },
+        "()-[:HAS_COMPONENT]->()": {
+          "low": 10088
+        },
+        "(:Supplier)-[:TIER_ONE_OF]->()": {
+          "low": 137439
+        },
+        "()-[:PRODUCED_IN]->()": {
+          "low": 4381
+        },
+        "()-[:SUPPLIERS]->()": {
+          "low": 911
+        },
+        "()-[:SUPPLIES_TO]->(:Supplier)": {
+          "low": 1143654
+        },
+        "()-[:SUPPLIERS]->(:Country)": {
+          "low": 911
+        },
+        "(:Component)-[:RELATED_TO]->()": {
+          "low": 117
+        },
+        "(:Branch)-[:RELATED_TO]->()": {
+          "low": 30920
+        },
+        "()-[:LOCATED_IN]->(:Country)": {
+          "low": 30107
+        },
+        "()-[:BELONGS_TO]->(:Supplier)": {
+          "low": 56663
+        },
+        "()-[:PRODUCES]->()": {
+          "low": 7831
+        },
+        "(:Branch)-[:BELONGS_TO]->()": {
+          "low": 33483
+        },
+        "()-[:MANUFACTURED_BY]->(:BusinessPartner)": {
+          "low": 1564
+        },
+        "()-[:PRODUCES]->(:Substance)": {
+          "low": 7831
+        },
+        "(:Branch)-[:PRODUCES]->()": {
+          "low": 7831
+        },
+        "()-[:MANUFACTURED_BY]->()": {
+          "low": 1564
+        },
+        "(:Branch)-[:LOCATED_IN]->()": {
+          "low": 28648
+        },
+        "()-[:REFINES]->()": {
+          "low": 340
+        },
+        "()-[:RELATIONS]->(:BusinessScope)": {
+          "low": 1208
+        },
+        "()-[:HAS_COMPONENT]->(:Component)": {
+          "low": 10088
+        },
+        "(:ManufacturerPart)-[:MANUFACTURED_BY]->()": {
+          "low": 1564
+        },
+        "()-[:CONTAINS_SUBSTANCE]->(:Substance)": {
+          "low": 764
+        },
+        "(:BusinessPartner)-[:RELATED_TO]->()": {
+          "low": 29009
+        },
+        "()-[:RELATED_TO]->()": {
+          "low": 59894
+        },
+        "(:BusinessPartner)-[:SUPPLIES_TO]->()": {
+          "low": 582975
+        },
+        "()-[:TIER_ONE_OF]->(:Branch)": {
+          "low": 29959
+        },
+        "()-[:SUPPLIES_TO]->(:Branch)": {
+          "low": 215609
+        },
+        "(:Smelter)-[:SUPPLIES_TO]->()": {
+          "low": 758
+        },
+        "(:BusinessPartner)-[:LOCATED_IN]->()": {
+          "low": 1124
+        },
+        "()-[:TIER_ONE_OF]->()": {
+          "low": 137439
+        },
+        "(:Supplier)-[:BELONGS_TO]->()": {
+          "low": 56663
+        },
+        "(:Country)-[:RELATIONS]->()": {
+          "low": 1208
+        },
+        "(:Smelter)-[:LOCATED_IN]->()": {
+          "low": 340
+        },
+        "()-[:BELONGS_TO]->(:BusinessPartner)": {
+          "low": 56663
+        },
+        "()-[:MANUFACTURED_BY]->(:Supplier)": {
+          "low": 1564
+        },
+        "()-[:SUPPLIES_TO]->()": {
+          "low": 1143654
+        },
+        "()-[:REFINES]->(:Substance)": {
+          "low": 340
+        },
+        "(:Substance)-[:PRODUCED_IN]->()": {
+          "low": 2476
+        },
+        "(:Country)-[:SUPPLIERS]->()": {
+          "low": 911
+        },
+        "()-[:SUPPLIES_TO]->(:BusinessPartner)": {
+          "low": 929451
+        },
+        "(:BusinessPartner)-[:PRODUCES]->()": {
+          "low": 7250
+        },
+        "(:Supplier)-[:LOCATED_IN]->()": {
+          "low": 29767
+        },
+        "(:ManufacturerPart)-[:PRODUCED_IN]->()": {
+          "low": 1905
+        },
+        "(:Component)-[:CONTAINS_SUBSTANCE]->()": {
+          "low": 764
+        },
+        "()-[:TIER_ONE_OF]->(:BusinessPartner)": {
+          "low": 108168
+        },
+        "()-[:BELONGS_TO]->()": {
+          "low": 56663
+        },
+        "(:Smelter)-[:REFINES]->()": {
+          "low": 340
+        },
+        "(:Branch)-[:TIER_ONE_OF]->()": {
+          "low": 73439
+        },
+        "()-[:SAME_AS]->(:SiemensPart)": {
+          "low": 1847
+        },
+        "(:BusinessPartner)-[:TIER_ONE_OF]->()": {
+          "low": 64445
+        },
+        "()-[:RELATED_TO]->(:BusinessScope)": {
+          "low": 59894
+        },
+        "()-[:CONTAINS_SUBSTANCE]->()": {
+          "low": 764
+        },
+        "()-[:LOCATED_IN]->()": {
+          "low": 30107
+        },
+        "()-[:TIER_ONE_OF]->(:Supplier)": {
+          "low": 137439
+        },
+        "(:Supplier)-[:RELATED_TO]->()": {
+          "low": 59777
+        },
+        "(:Supplier)-[:PRODUCES]->()": {
+          "low": 7831
+        }
+      }
+    ]
+  }
+]
