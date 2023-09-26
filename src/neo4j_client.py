@@ -49,3 +49,27 @@ class Neo4jClient:
             records = [record for record in result]
         driver.close()
         return records
+
+    def check_and_execute_cypher_query(self, cypher_query):
+        """
+        Executes a Cypher query against the Neo4j database.
+
+        Args:
+        cypher_query (str): The Cypher query to execute.
+
+        Returns:
+        records: A list of dictionaries representing the query results.
+        """
+
+        try:
+            driver = self._connect_to_neo4j()
+            with driver.session(database=self.database) as session:
+                result = session.run(cypher_query).data()
+                records = [record for record in result]
+            driver.close()
+            executable = True
+        except:
+            records = 'None'
+            executable = False
+
+        return ([records,executable])

@@ -17,7 +17,7 @@ class ChatGPTClient:
         self.api_url = f"{api_base}/openai/deployments/{deployment_name}/completions?api-version={api_version}"
         self.api_key = api_key
 
-    def get_completion(self, prompt, temperature=0, max_tokens=1024):
+    def get_completion(self, prompt, temperature=0, max_tokens=2048):
         """
         Generates a text completion based on the given prompt using the OpenAI GPT-3 API.
 
@@ -32,12 +32,18 @@ class ChatGPTClient:
             'temperature': temperature,
             'max_tokens': max_tokens
         }
+        # print(f"length of prompt is:{int(len(prompt)/4)}")
         # Send the API request
         response = requests.post(self.api_url, json=json_data, headers={'api-key': self.api_key})
         # Parse the response JSON
-        completion = response.json()
+        try:
+            completion = response.json()
+            # print(completion['usage'])
         # Check if the content is filtered due to OpenAI's content policies
-        if completion['choices'][0]['finish_reason'] == "content_filter":
-            print("The generated content is filtered.")
-            # Return the generated completion text
-        return completion['choices'][0]['text']
+            if completion['choices'][0]['finish_reason'] == "content_filter":
+                print("The generated content is filtered.")
+                # Return the generated completion text
+            return completion['choices'][0]['text']
+        except (KeyError, requests.exceptions.JSONDecodeError):
+            print(completion)
+            pass
