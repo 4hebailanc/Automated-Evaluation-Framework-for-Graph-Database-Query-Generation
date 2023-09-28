@@ -5,6 +5,9 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(script_dir)
 # Set the current working directory to the script directory
 os.chdir(project_dir)
+
+from neo4j_client import Neo4jClient
+
 def get_templates_and_descriptions(template_path):
 
     with open(template_path,'r') as f:
@@ -90,3 +93,28 @@ def create_gold_template(save_path=None, templates_path=None, templates = None, 
 
     with open(descriptions2id_save_path, 'w') as f:
         f.write(json.dumps(descriptions2id))
+
+def create_schema_file():
+    driver = neo4j_client._connect_to_neo4j()
+    schema_query = "CALL apoc.meta.stats YIELD labels, relTypes"
+    schema = {}
+    with driver.session(database="neo4j") as session:
+        # Use .data() to access the results array
+        query_result = session.run(schema_query).data()
+        schema['labels'] = query_result[0]['labels']
+        schema['relTypes'] = query_result[0]['relTypes']
+    
+    with open('./data/schema.json', 'w', encoding='utf-8') as f:
+        json.dump(schema, f, ensure_ascii=False)
+        
+if __name__ == "__main__":
+    with open('app/neo4j_specifications.json') as f:
+        neo4j_specifications = json.load(f)
+
+    neo4j_uri = neo4j_specifications['uri']
+    neo4j_user = neo4j_specifications['user']
+    neo4j_password = neo4j_specifications['password']
+    neo4j_database = neo4j_specifications['database']
+
+    neo4j_client = Neo4jClient(uri=neo4j_uri, user=neo4j_user, password=neo4j_password, database=neo4j_database)
+    create_schema_file()

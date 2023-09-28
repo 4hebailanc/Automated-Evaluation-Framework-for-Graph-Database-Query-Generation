@@ -5,6 +5,7 @@ import json
 from functools import partial
 import time
 import os
+import random
 # Get the directory of the executed script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_dir = os.path.dirname(script_dir)
@@ -12,8 +13,8 @@ project_dir = os.path.dirname(script_dir)
 os.chdir(project_dir)
 
 # local functions
-from src.chatgpt_client import ChatGPTClient
-from src.neo4j_client import Neo4jClient
+from chatgpt_client import ChatGPTClient
+from neo4j_client import Neo4jClient
 from create_gold_template import create_gold_template
 
 ############## FUNCTIONS ##############
@@ -77,7 +78,7 @@ def extract_and_export_graph_info():
     # Cypher query
     node_labels_query = "MATCH (n) RETURN distinct labels(n) as n"
     relations_query = "CALL apoc.meta.stats YIELD labels, relTypes"
-    # TODO
+    # TODO -> done
     properties_query = "MATCH (n) UNWIND keys(n) AS key RETURN labels(n)[0] AS label, collect(distinct key) AS propertyKeys UNION MATCH ()-[r]->() UNWIND keys(r) AS key RETURN type(r) AS label, collect(distinct key) AS propertyKeys"
 
     label_list, relations, properties = [], {}, {}
@@ -143,12 +144,19 @@ def export_numeric_properties(save_path):
                     ls_result = prop_result[0]['prop']
 
                     ls_result = [x for x in ls_result if type(x) is not str]
+                    
+                    twenty_fifth = percentile(ls_result, 25)
+                    fiftith = percentile(ls_result, 50)
+                    senventy_fifth = percentile(ls_result, 75)
 
-                    temp_ls.append(round(percentile(ls_result, 25), 3))
-                    temp_ls.append(round(percentile(ls_result, 50), 3))
-                    temp_ls.append(round(percentile(ls_result, 75), 3))
+                    if math.isnan(twenty_fifth) or math.isnan(fiftith) or math.isnan(senventy_fifth):
+                        break
+                    else:
+                        temp_ls.append(round(twenty_fifth, 3))
+                        temp_ls.append(round(fiftith, 3))
+                        temp_ls.append(round(senventy_fifth, 3))
 
-                    prop_stats[i['propertyName']] = list(set(temp_ls))
+                        prop_stats[i['propertyName']] = list(set(temp_ls))
 
     driver.close()
     create_outputfile('propertiesQuantile.json', prop_stats)
@@ -193,13 +201,12 @@ def create_template(save_path= './data/graph/',max_example_number=5):
     with open(nodeRelations_save_path) as file:
         nodeRel_data = json.load(file)
         rel_labels_ls = get_rellabels(nodeRel_data)
+        random.shuffle(rel_labels_ls)
 
     with open(propertiesQuantile_save_path) as file:
         propStats_data = json.load(file)
-    keys = propStats_data.keys()
 
     template_data = {}
-    property1, num = '', ''
     for i in range(len(templates)):
         k = 0
         ex = []
@@ -215,25 +222,20 @@ def create_template(save_path= './data/graph/',max_example_number=5):
                 if "property1" in templates[i]:
                     temp_idx = 0
                 # TODO
-                    if "num" in templates[i]:
-                        # if label in propStats_data:
-                        # if property_data[label][temp_idx] in propStats_data[label]:
-                        if property_data[label][temp_idx] in propStats_data:
-                            query = query.replace('num', str(propStats_data[property_data[label][temp_idx]][0]))
-                            query = query.replace("property1", property_data[label][temp_idx])
-                            property1 = property_data[label][temp_idx]
-                            num = str(propStats_data[property_data[label][temp_idx]][0])
-                        else:
-                            continue
-                        # else:
-                        #     continue
+                if "num" in templates[i]:
+                    if property_data[label][temp_idx] in propStats_data:
+                        query = query.replace('num', str(propStats_data[property_data[label][temp_idx]][0]))
+                        query = query.replace("property1", property_data[label][temp_idx])
+                        
                     else:
-                        query = query.replace("property1", property_data[label][0])
-                        property1 = property_data[label][0]
+                        continue
+
+                else:
+                    query = query.replace("property1", property_data[label][0])
 
                 if "Label2" in templates[i]:
                     label2 = triplet[2]
-                    if label2 is None or label2 is '':
+                    if label2 is None or label2 == '':
                         label2 = label
                         label = ''
                         query = templates[i].replace("n:Label1", "n")
@@ -257,6 +259,7 @@ def create_template(save_path= './data/graph/',max_example_number=5):
                 else:
                     ex.append(query)
                     k += 1
+
                 if k == max_example_number:
                     break
 
@@ -347,14 +350,14 @@ def example_describe_cypher_query(query, temprature=0.5):
 def schema_describe_cypher_query(query, temprature=0.5):
     with open('data/schema.json') as f:
         schema = json.load(f)
-    cleaned_schema = clean_schema(schema)
+    #cleaned_schema = clean_schema(schema)
 
     prompt = f"""
         I want you to act as a Neo4j specialist. I will supply you with the schema of the database and a Cypher query that needs to be explained 
         in a simple manner, suitable for someone without any knowledge of databases. 
         Please write a user-friendly description for the given query in one sentence, ensuring it is concise, 
         easily understandable, and avoids technical jargon.       
-        Schema: ---{cleaned_schema}---      
+        Schema: ---{schema}---      
         [Query]:  ```{query}```               
         [Answer]: """
     description = chat_gpt_client.get_completion(prompt=prompt, temperature=temprature)
@@ -385,6 +388,7 @@ def compare_results(template, generated):
             # print('no',template[i],generated[i])
             print('no')
     # todo: compare results and save queries
+
 def clean_schema(input_data):
     cleaned_data = []
     for entry in input_data:
@@ -471,9 +475,4 @@ if __name__ == "__main__":
     # create template
     create_template(save_path)
 
-    create_test_dataset(save_path,temperture=0)
-
-
-
-
-
+    #create_test_dataset(save_path,temperture=0)
