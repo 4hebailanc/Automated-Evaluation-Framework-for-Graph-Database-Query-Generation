@@ -63,7 +63,7 @@ class Neo4jClient:
 
         try:
             driver = self._connect_to_neo4j()
-            with driver.session(database=self.database) as session:
+            with (driver.session(database=self.database) as session):
                 result = session.run(cypher_query).data()
                 records = [record for record in result]
             driver.close()

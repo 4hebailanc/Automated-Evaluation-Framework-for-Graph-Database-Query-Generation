@@ -1,0 +1,73 @@
+{
+  "Node Matching": [
+    "MATCH (n:Label1) RETURN n | Find all nodes with Label1.",
+    "MATCH (n:Label1) WHERE n.property1 = {n.property1.Value1} RETURN n | Find nodes with Label1 that have a specific property value.",
+    "MATCH (n:Label1) RETURN DISTINCT n | Find all unique nodes with Label1.",
+    "MATCH (n:Label1)-[r1:R1]->() RETURN n | Find nodes with outgoing relationships of a specific type.",
+    "MATCH (n:Label1) RETURN n LIMIT 10 | Limit the result to the first 10 nodes with Label1.",
+    "MATCH (n:Label1) WHERE EXISTS(n.property1) RETURN n | Find nodes with Label1 that have a specific property.",
+    "MATCH (n:Label1) WHERE NOT EXISTS(n.property1) RETURN n | Find nodes with Label1 that don't have a specific property.",
+    "MATCH (n:Label1) RETURN COUNT(n) | Count the number of nodes with Label1.",
+    "MATCH (n:Label1) RETURN collect(n.property1) | Collect values of a property from nodes with Label1.",
+    "MATCH (n:Label1)-[r1:R1]->(m:Label2) WHERE n.property1 = {n.property1.Value1} RETURN m | Find related nodes of Label2 from nodes with Label1 based on a property condition."
+  ],
+  "Relationship Matching": [
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN r1 | Find relationships of a specific type between nodes with Label1 and Label2.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) WHERE r1.property1 = {r1.property1.Value1} RETURN r1 | Find relationships between nodes with Label1 and Label2 with a property condition.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN DISTINCT r1 | Find unique relationships of a specific type between nodes with Label1 and Label2.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN r1 LIMIT 10 | Limit the result to the first 10 relationships between nodes with Label1 and Label2.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN COUNT(r1) | Count the number of relationships between nodes with Label1 and Label2.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) WHERE EXISTS(r1.property1) RETURN r1 | Find relationships between nodes with Label1 and Label2 without a specific property.",
+    "MATCH (n:Label1)-[r1]->(x)-[r2]->(m:Label2) RETURN r1, r2 | Find relationships of any type between nodes with Label1 and Label2 through an intermediate node.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN r1 ORDER BY r1.property1 DESC | Sort relationships between nodes with Label1 and Label2 by a property in descending order."
+  ],
+  "Aggregation and Analysis": [
+    "MATCH (n:Label1) RETURN COUNT(*) | Count the total number of nodes with Label1.",
+    "MATCH (n:Label1)-[r1]->() RETURN COUNT(DISTINCT n) | Count the number of unique nodes with Label1 connected by relationships.",
+    "MATCH (n:Label1) RETURN max(n.property1) | Find the maximum value of a property in nodes with Label1.",
+    "MATCH (n:Label1) RETURN min(n.property1) | Find the minimum value of a property in nodes with Label1.",
+    "MATCH (n:Label1) RETURN avg(n.property1) | Calculate the average value of a property in nodes with Label1.",
+    "MATCH (n:Label1) WHERE n.property1 >= {n.property1.Value1} AND n.property1 <= {n.property1.Value2} RETURN n | Filter nodes with Label1 by a property value range.",
+    "MATCH (n:Label1) WHERE n.property1 <= {n.property1.Value1} OR n.property1 >= {n.property1.Value2} RETURN n | Filter nodes with Label1 by not in a property value range.",
+    "MATCH (n:Label1) WHERE exists(n.property1) RETURN n | Filter nodes with Label1 based on property existence.",
+    "MATCH (n:Label1) WHERE n.property1 <> {n.property1.Value1} RETURN n | Find nodes with Label1 where a property is not equal to a specific value.",
+    "MATCH (n:Label1)-[r1:R1]->(m:Label2) RETURN count(*) | Count the total number of relationships of a specific type between nodes with Label1 and Label2.",
+    "MATCH (n:Label1) RETURN collect(n.property1) | Collect values of a property from nodes with Label1 for analysis."
+  ],
+  "Complex Queries": [
+    "MATCH (n:Label1)-[r1:R1]->()-[r1:R1]->(m:Label2) RETURN n, m | Searches for pairs of nodes labeled Label1 and Label2 that are connected by two relationships of the same type R1",
+    "MATCH (n:Label1)-[r1:R1]->(x)-[r1:R1]->(m:Label2) WHERE x.property1 = {x.property1.Value1} RETURN n, m | Searches for pairs of nodes labeled Label1 and Label2 that are connected by two relationships of the same type R1, with a property condition on the intermediate node.",
+    "MATCH (n:Label1)-[r1:R1]->(x)-[r2:R2]->(m:Label2) WHERE x.property1 = {x.property1.Value1} RETURN n, m | Find nodes with Label1 and Label2 connected by two different relationship types, with a property condition on the intermediate node.",
+    "MATCH (n:Label1)-[r1:R1]->(x)-[r2:R2]->(m:Label2) WHERE n.property1 > {n.property1.Value1} AND m.property1 = {m.property1.Value1} RETURN n, m | Find nodes with Label1 and Label2 connected by two different relationship types, with property conditions on both end nodes.",
+    "MATCH (n:Label1)-[r1:R1]->(x:LabelX)-[r1:R1]->(m:Label2) RETURN n, m | Find nodes with Label1 and Label2 connected by a specific relationship type with an intermediate node of LabelX.",
+    "MATCH (n:Label1)-[r1:R1]->()-[r2:R2]->(m:Label2) RETURN n, m ORDER BY m.property1 DESC | Find nodes with Label1 and Label2 connected by two relationship types and order the results by a property of the end node in descending order.",
+    "MATCH (n:Label1)-[r1:R1]->(x:LabelX)-[r1:R1]->(m:Label2) RETURN n, m LIMIT 10 | Find nodes with Label1 and Label2 connected by a specific relationship type with an intermediate node of LabelX and limit the result to the first 10 pairs.",
+    "MATCH (n:Label1)-[r1:R1]->(x)-[r2:R2]->(m:Label2) RETURN collect(x.property1) | Find nodes with Label1 and Label2 connected by different relationship types, collect values of a property from intermediate nodes.",
+    "MATCH (n:Label1)-[r1:R1]->()-[r2:R2]->(m:Label2) WHERE EXISTS(m.property1) RETURN n, m | Find nodes with Label1 and Label2 connected by two relationship types, with a condition on the end node's property."
+  ],
+  "Advanced Filtering": [
+    "MATCH (n:Label1) WHERE n.property1 IN [{n.property1.Value1}, {n.property1.Value2}, {n.property1.Value3}] RETURN n | Find nodes with Label1 where a property matches any of the specified values.",
+    "MATCH (n:Label1) WHERE n.property1 > {n.property1.Value1} RETURN n | Find nodes with Label1 based on a property condition.",
+    "MATCH (n:Label1) WHERE n.property1 <> {n.property1.Value1} RETURN n | Find nodes with Label1 where a property is not equal to a specific value.",
+    "MATCH (n:Label1) WHERE n.property1 STARTS WITH {n.property1.Prefix1} RETURN n | Find nodes with Label1 where a property starts with a specific prefix.",
+    "MATCH (n:Label1) WHERE n.property1 CONTAINS {n.property1.Substring1} RETURN n | Find nodes with Label1 where a property contains a specific substring."
+  ],
+  "Traversal and Paths": [
+    "MATCH (n:Label1)-[r1:R1]->(m:Label2) RETURN n, m | Find nodes with Label1 connected by a specific relationship type.",
+    "MATCH (n:Label1)-[r1:R1*2]->(m:Label2) RETURN n, m | Find nodes with Label1 connected by a two-step path of a specific relationship type.",
+    "MATCH (n:Label1)-[r1:R1*..2]->(m:Label2) RETURN n, m | Find nodes with Label1 connected by a path of up to three steps of a specific relationship type.",
+    "MATCH (n:Label1)-[r1:R1*2..3]->(m:Label2) RETURN n, m | Find nodes with Label1 connected by a path of 2 to 3 steps of a specific relationship type.",
+    "MATCH (n:Label1)-[r1:R1*]->(m:Label2) WHERE n.property1 = {n.property1.Value1} RETURN n, m | Find nodes with Label1 connected by a variable-length path of a specific relationship type, with a property condition on the start node.",
+    "MATCH p=shortestPath((n:Label1)-[r1:R1*]->(m:Label2)) RETURN nodes(p) | Find the shortest path between nodes with Label1 using a specific relationship type."
+  ],
+  "Combining Filters and Aggregation": [
+    "MATCH (n:Label1) WHERE n.property1 > {n.property1.Value1} RETURN sum(n.property1) | Sum the values of property for nodes with Label1 based on a property condition.",
+    "MATCH (n:Label1)-[r1:R1]->() RETURN n, collect(n.property1) | Collect values of property for nodes with Label1 connected by a specific relationship type.",
+    "MATCH (n:Label1)-[r1:R1]->() RETURN n, min(n.property1) | Find nodes with the minimum value of property among nodes with Label1 connected by a specific relationship type.",
+    "MATCH (n:Label1)-[r1:R1]->() RETURN n, max(n.property1) | Find nodes with the maximum value of property among nodes with Label1 connected by a specific relationship type.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN n, m, collect(m.property1) | Collect values of property for nodes with Label2 related to nodes with Label1 by a specific relationship type.",
+    "MATCH (n:Label1) WHERE n.property1 > {n.property1.Value1} RETURN count(n) * 2 | Multiply the count of nodes with Label1 by 2 based on a property condition.",
+    "MATCH (n:Label1) WHERE n.property1 < {n.property1.Value1} RETURN CASE WHEN count(n) > 10 THEN 'High Count' ELSE 'Low Count' END | Categorize the count of nodes with Label1 based on a property condition.",
+    "MATCH (n:Label1)-[r1]->(m:Label2) RETURN n, collect(m.property1) | Find the first value of property among nodes with Label2 related to nodes with Label1 by a specific relationship type."
+  ]
+}
