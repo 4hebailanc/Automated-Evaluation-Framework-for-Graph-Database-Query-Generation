@@ -32,8 +32,8 @@ These queries are then executed against the Neo4j database, and the results are 
 ## Getting Started
 To utilize this framework, follow these steps:
 
-1.Install the required dependencies listed in requirements.txt.
-2.Provide the necessary login credentials in chatgpt_client.py and neo4j_client.py.
-3.Customize the design_template.json file according to your graph database schema.
-4.Run data_preparation.py to prepare the data for query generation.
-5.Execute query_generation.py to generate and evaluate queries against your Neo4j database.
+1. Install the required dependencies listed in requirements.txt.
+2. Provide the necessary login credentials in chatgpt_client.py and neo4j_client.py.
+3. Customize the design_template.json file according to your graph database schema.
+4. Run data_preparation.py to prepare the data for query generation.
+5. Execute query_generation.py to generate and evaluate queries against your Neo4j database.
