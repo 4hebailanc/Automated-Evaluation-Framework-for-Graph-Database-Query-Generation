@@ -1,0 +1,6 @@
+{
+  "uri": "bolt://localhost:7689",
+  "user": "neo4j",
+  "password": "",
+  "database": "neo4j"
+}
