@@ -32,8 +32,20 @@ These queries are then executed against the Neo4j database, and the results are 
 ## Getting Started
 To utilize this framework, follow these steps:
 
-1.Install the required dependencies listed in requirements.txt.
-2.Provide the necessary login credentials in chatgpt_client.py and neo4j_client.py.
-3.Customize the design_template.json file according to your graph database schema.
-4.Run data_preparation.py to prepare the data for query generation.
-5.Execute query_generation.py to generate and evaluate queries against your Neo4j database.
+1. Ensure you have [conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) installed on your system.
+2. Create a new Python 3.11 environment using conda by running the following command in your terminal:
+```bash
+conda create -n graph_query_env python=3.11
+```
+3. Activate the newly created environment:
+```bash
+conda activate graph_query_env
+```
+4. Install the required dependencies listed in requirements.txt by running:
+```bash
+pip install -r requirements.txt
+```
+5. Provide the necessary login credentials in chatgpt_client.py and neo4j_client.py.
+6. Customize the design_template.json file according to your graph database schema.
+7. Run data_preparation.py to prepare the data for query generation.
+8. Execute query_generation.py to generate and evaluate queries against your Neo4j database.
